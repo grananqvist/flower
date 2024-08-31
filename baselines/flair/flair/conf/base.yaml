@@ -1,0 +1,38 @@
+---
+num_clients_per_round: 200
+num_rounds: 5000
+central_learning_rate: 0.1
+evaluation_frequency: 20
+
+# Run with 4 gpus and 20 processes.
+cpus_per_client: 2
+gpus_per_client: 0.2
+num_cpus: 40
+num_gpus: 4
+
+# settings for debugging
+#cpus_per_client: 1
+#gpus_per_client: 0
+#num_cpus: 1
+#num_gpus: 0
+#num_clients_per_round: 5
+#num_rounds: 10
+
+dataset:
+  use_fine_grained_labels: false
+  max_num_user_images: 512
+  data_path: "./data/flair_federated.hdf5"
+  #data_path: "./data/flair_federated_small.hdf5"
+
+strategy:
+  _target_: flwr.server.strategy.FedAdam
+  eta: ${central_learning_rate}
+  eta_l: ${client.client_learning_rate}
+  beta_1: 0.9
+  beta_2: 0.99
+  tau: 0.01
+
+client:
+  batch_size: 16
+  epochs_per_round: 2
+  client_learning_rate: 0.01
