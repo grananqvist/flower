@@ -16,12 +16,14 @@ num_gpus: 4
 #num_cpus: 1
 #num_gpus: 0
 #num_clients_per_round: 5
-#num_rounds: 10
+#num_rounds: 11
+#evaluation_frequency: 5
 
 dataset:
   use_fine_grained_labels: false
   max_num_user_images: 512
   data_path: "./data/flair_federated.hdf5"
+  # settings for debugging
   #data_path: "./data/flair_federated_small.hdf5"
 
 strategy:

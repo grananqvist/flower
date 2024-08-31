@@ -63,7 +63,7 @@ python -m dataset.flair.download_preprocess --output_file ../../data/flair_feder
 
 There is also a small preprocessed dataset available for testing here:
 ```
-!wget https://pfl-data.s3.us-east-2.amazonaws.com/flair_federated_small.h5
+wget https://pfl-data.s3.us-east-2.amazonaws.com/flair_federated_small.h5
 ```
 
 ## Environment Setup
