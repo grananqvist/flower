@@ -84,24 +84,32 @@ python -m flair.main
 
 ## Expected Results
 
-The command below will reproduce the most important baselines from Table 1 of the [FLAIR paper](https://proceedings.neurips.cc/paper_files/paper/2022/hash/f64e55d03e2fe61aa4114e49cb654acb-Abstract-Datasets_and_Benchmarks.html).
+The commands below will reproduce the most important "FL" baselines from Table 1 of the [FLAIR paper](https://proceedings.neurips.cc/paper_files/paper/2022/hash/f64e55d03e2fe61aa4114e49cb654acb-Abstract-Datasets_and_Benchmarks.html):
 
-FL-R-17 -- Federated Learning from scratch with coarse-grained labels:
+<div style="border: 1px solid #f0ad4e; background-color: #fcf8e3; padding: 10px; border-radius: 4px;">
+<strong>Warning:</strong> The benchmarks are not fully reproduced yet. Marco-averaged AP for `FL-F-17` is 31.5, but expected to be 62.0.
+</div>
+
+**`FL-R-17` -- Federated Learning from scratch with coarse-grained labels**
+Expected macro AP: 50.1±0.5
+```bash
+poetry run python -m flair.main pretrained=false
+```
+
+**`FL-F-17` -- Federated Learning with pre-trained model and coarse-grained labels**
+Expected macro AP: 62.0±0.3
 ```bash
 poetry run python -m flair.main
 ```
 
-FL-F-17 -- Federated Learning with pre-trained model and coarse-grained labels.
+**`FL-R-1628` -- Federated Learning from scratch with fine-grained labels**
+Expected micro AP: 22.5±0.3
 ```bash
-poetry run python -m flair.main pretrained=true
+poetry run python -m flair.main pretrained=false dataset.use_fine_grained_labels=true
 ```
 
-FL-R-1628 -- Federated Learning from scratch with fine-grained labels.
+**`FL-F-1628` -- Federated Learning with pre-trained model and fine-grained labels**
+expected micro AP: 27.0±0.4
 ```bash
 poetry run python -m flair.main dataset.use_fine_grained_labels=true
-```
-
-FL-F-1628 -- Federated Learning with pre-trained model and fine-grained labels.
-```bash
-poetry run python -m flair.main dataset.use_fine_grained_labels=true pretrained=true
 ```

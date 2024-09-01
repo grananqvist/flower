@@ -25,14 +25,14 @@ from flair.module_modification import (
 )
 
 
-def get_flair_model(num_outputs: int):
+def get_flair_model(num_outputs: int, pretrained: bool):
     """Init the ResNet18 used for FLAIR baseline."""
     return multi_label_cnn(
         model_type="resnet18",
         num_outputs=num_outputs,
         channel_mean=[0.485, 0.456, 0.406],
         channel_stddevs=[0.229, 0.224, 0.225],
-        pretrained=True,
+        pretrained=pretrained,
     )
 
 

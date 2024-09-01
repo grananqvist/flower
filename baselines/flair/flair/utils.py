@@ -78,7 +78,7 @@ def gen_on_fit_config_fn(
 
 
 def get_flair_eval_fn(
-    hdf5_path: Path, evaluation_frequency: int, use_fine_grained_labels: bool
+    hdf5_path: Path, evaluation_frequency: int, use_fine_grained_labels: bool, pretrained: bool
 ) -> Callable[
     [int, NDArrays, Dict[str, Scalar]], Optional[Tuple[float, Dict[str, Scalar]]]
 ]:
@@ -106,7 +106,7 @@ def get_flair_eval_fn(
             return None
         # determine device
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        net = get_flair_model(num_classes)
+        net = get_flair_model(num_classes, pretrained)
         state_dict = OrderedDict(
             {
                 k: torch.tensor(np.atleast_1d(v))
@@ -127,17 +127,18 @@ def get_flair_eval_fn(
     return evaluate
 
 
-def get_initial_parameters(num_classes) -> Parameters:
+def get_initial_parameters(num_classes, pretrained) -> Parameters:
     """Return initial parameters from a model.
 
     Args:
         num_classes (int, optional): Defines if using CIFAR10 or 100. Defaults to 10.
+        pretrained (bool): Whether to use pre-trained model.
 
     Returns
     -------
         Parameters: Parameters to be sent back to the server.
     """
-    model = get_flair_model(num_classes)
+    model = get_flair_model(num_classes, pretrained)
     weights = [val.cpu().numpy() for _, val in model.state_dict().items()]
     parameters = ndarrays_to_parameters(weights)
 

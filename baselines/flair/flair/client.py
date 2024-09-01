@@ -23,6 +23,7 @@ class RayClient(fl.client.NumPyClient):
         hdf5_path: Path,
         num_classes: int,
         use_fine_grained_labels: bool,
+        pretrained: bool,
         max_num_user_images: int,
         evaluation_frequency: int,
     ):
@@ -38,6 +39,8 @@ class RayClient(fl.client.NumPyClient):
             Number of classes in the classification problem.
         use_fine_grained_labels : bool
             Whether to use fine-grained or coarse-grained labels.
+        pretrained : bool
+            Whether to use pre-trained model.
         max_num_user_images : int
             Limit number of images per user to this.
         evaluation_frequency : int
@@ -51,6 +54,7 @@ class RayClient(fl.client.NumPyClient):
         self._evaluation_frequency = evaluation_frequency
         self.properties: Dict[str, Scalar] = {"tensor_type": "numpy.ndarray"}
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.net = get_flair_model(self.num_classes, pretrained)
 
     def get_properties(self, config: Dict[str, Scalar]) -> Dict[str, Scalar]:
         """Return properties for this client."""
@@ -62,8 +66,7 @@ class RayClient(fl.client.NumPyClient):
         If no model is passed, then a local model is created. This can be used to
         initialize a model in the server.
         """
-        net = get_flair_model(self.num_classes)
-        weights = [val.cpu().numpy() for _, val in net.state_dict().items()]
+        weights = [val.cpu().numpy() for _, val in self.net.state_dict().items()]
         return weights
 
     def fit(  # type: ignore[override]
@@ -115,20 +118,20 @@ class RayClient(fl.client.NumPyClient):
 
     def set_parameters(self, parameters: NDArrays):
         """Load weights inside the network."""
-        net = get_flair_model(self.num_classes)
         weights = parameters
-        params_dict = zip(net.state_dict().keys(), weights)
+        params_dict = zip(self.net.state_dict().keys(), weights)
         state_dict = OrderedDict(
             {k: torch.from_numpy(np.copy(v)) for k, v in params_dict}
         )
-        net.load_state_dict(state_dict, strict=True)
-        return net
+        self.net.load_state_dict(state_dict, strict=True)
+        return self.net
 
 
 def get_ray_client_fn(
     hdf5_path: Path,
     num_classes: int,
     use_fine_grained_labels: bool,
+    pretrained: bool,
     max_num_user_images: int,
     evaluation_frequency: int,
 ) -> Callable[[str], RayClient]:
@@ -142,6 +145,8 @@ def get_ray_client_fn(
         Number of classes in the classification problem.
     use_fine_grained_labels : bool
         Whether to use fine-grained or coarse-grained labels.
+    pretrained : bool
+        Whether to use pre-trained model.
     max_num_user_images : int
         Limit number of images per user to this.
     evaluation_frequency : int
@@ -159,6 +164,7 @@ def get_ray_client_fn(
             hdf5_path=hdf5_path,
             num_classes=num_classes,
             use_fine_grained_labels=use_fine_grained_labels,
+            pretrained=pretrained,
             max_num_user_images=max_num_user_images,
             evaluation_frequency=evaluation_frequency,
         )

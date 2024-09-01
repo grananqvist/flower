@@ -40,6 +40,7 @@ def main(cfg: DictConfig) -> None:
         hdf5_path=hdf5_path,
         evaluation_frequency=cfg.evaluation_frequency,
         use_fine_grained_labels=cfg.dataset.use_fine_grained_labels,
+        pretrained=cfg.pretrained,
     )
 
     # Define client resources and ray configs
@@ -59,7 +60,7 @@ def main(cfg: DictConfig) -> None:
     )
 
     # select strategy
-    initial_parameters: Parameters = utils.get_initial_parameters(num_classes)
+    initial_parameters: Parameters = utils.get_initial_parameters(num_classes, cfg.pretrained)
     strategy = instantiate(
         cfg.strategy,
         fraction_fit=float(cfg.num_clients_per_round) / population,
@@ -80,6 +81,7 @@ def main(cfg: DictConfig) -> None:
         hdf5_path=hdf5_path,
         num_classes=num_classes,
         use_fine_grained_labels=cfg.dataset.use_fine_grained_labels,
+        pretrained=cfg.pretrained,
         max_num_user_images=cfg.dataset.max_num_user_images,
         evaluation_frequency=cfg.evaluation_frequency,
     )

@@ -3,6 +3,7 @@ num_clients_per_round: 200
 num_rounds: 5000
 central_learning_rate: 0.1
 evaluation_frequency: 20
+pretrained: true
 
 # Run with 4 gpus and 20 processes.
 cpus_per_client: 2
